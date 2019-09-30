@@ -29,10 +29,12 @@ const app = express();
 // Middleware Setup
 app.use(session({
   secret: "basic-auth-secret",
-  cookie: { maxAge: 60000 },
+  resave: true,
+  saveUninitialized: true,
+  cookie: { maxAge: 24 * 60 * 60 *1000 },
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
-    ttl: 24 * 60 * 60 // 1 day
+    ttl: 24 * 60 * 60 *1000 // 1 day
   })
 }));
 app.use(logger('dev'));

@@ -8,6 +8,7 @@ const router = express.Router();
 const User           = require("../models/user");
 
 router.get("/signup", (req, res, next) => {
+  console.log(req.session)
   res.render("auth/signup");
 });
 
@@ -32,29 +33,30 @@ router.post("/signup", (req, res, next) => {
         });
         return;
       }
-      User.create({
+      return User.create({
         username,
         password: hashPass
       })
-      .then(() => {
-        res.redirect("/");
-      })
-      .catch(error => {
-        console.log(error);
-      })
     })
+    .then((user) => {
+      req.session.user = user;
+      res.redirect("/");
+    })
+    
   .catch(error => {
     console.log(error);
   })
 });
 
 router.get("/login", (req, res, next) => {
+  console.log(req.session)
   res.render("auth/login");
 });
 
 router.post("/login", (req, res, next) => {
   const theUsername = req.body.username;
   const thePassword = req.body.password;
+  console.log(req.session)
 
   if (theUsername === "" || thePassword === "") {
     res.render("auth/login", {
@@ -89,6 +91,7 @@ router.post("/login", (req, res, next) => {
 router.get("/logout", (req, res, next) => {
   req.session.destroy((err) => {
     // cannot access session here
+    if(err) {console.log(err)}
     res.redirect("/login");
   });
 });
